@@ -54,9 +54,6 @@
         </div>
         <div class="col-lg-8 pt-2" v-if="response!==''" v-show="elementVisible" style="text-align:center "><b><h3>{{response=="success"?"success":"fail"}}</h3></b></div>
       </div>
-      <!-- <div class="row d-flex justify-content-center py-5 mt-3" style="width:99%">
-    <h3 class="col lg-8  response" style="text-align:center; opacity:{{adv}}"></h3>
-      </div>-->
     </div>
   </div>
 </template>

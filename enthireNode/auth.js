@@ -12,7 +12,7 @@ const TOKEN_PATH = "token.json";
 fs.readFile("credentials.json", (err, content) => {
   if (err) return console.log("Error loading client secret file:", err);
   // Authorize a client with credentials, then call the Google Calendar API.
-  authorize(JSON.parse(content), listEvents);
+  authorize(JSON.parse(content));
 });
 
 /**
@@ -21,28 +21,22 @@ fs.readFile("credentials.json", (err, content) => {
  * @param {Object} credentials The authorization client credentials.
  * @param {function} callback The callback to call with the authorized client.
  */
-function authorize(credentials, callback) {
+function authorize(credentials) {
   const { client_secret, client_id, redirect_uris } = credentials.installed;
   const oAuth2Client = new google.auth.OAuth2(
     client_id,
     client_secret,
     redirect_uris[0]
   );
-  // Check if we have previously stored a token.
-  fs.readFile(TOKEN_PATH, (err, token) => {
-    if (err) return getAccessToken(oAuth2Client, callback);
-    oAuth2Client.setCredentials(JSON.parse(token));
-    callback(oAuth2Client);
-  });
+  getAccessToken(oAuth2Client);
 }
-
 /**
  * Get and store new token after prompting for user authorization, and then
  * execute the given callback with the authorized OAuth2 client.
  * @param {google.auth.OAuth2} oAuth2Client The OAuth2 client to get token for.
  * @param {getEventsCallback} callback The callback for the authorized client.
  */
-function getAccessToken(oAuth2Client, callback) {
+function getAccessToken(oAuth2Client) {
   const authUrl = oAuth2Client.generateAuthUrl({
     access_type: "offline",
     scope: SCOPES
@@ -62,46 +56,6 @@ function getAccessToken(oAuth2Client, callback) {
         if (err) return console.error(err);
         console.log("Token stored to", TOKEN_PATH);
       });
-      callback(oAuth2Client);
     });
   });
-}
-function listEvents(auth){
-const calendar = google.calendar({ version: "v3", auth });
-var event = {
-  summary: "Google I/O 2015",
-  location: "800 Howard St., San Francisco, CA 94103",
-  description: "A chance to hear more about Google's developer products.",
-  start: {
-    dateTime: "2019-12-28T09:00:00-07:00",
-    timeZone: "America/Los_Angeles"
-  },
-  end: {
-    dateTime: "2019-12-28T17:00:00-07:00",
-    timeZone: "America/Los_Angeles"
-  },
-  recurrence: ["RRULE:FREQ=DAILY;COUNT=2"],
-  attendees: [
-    { email: "agams4179@gmail.com" },
-    { email: "agams4129@gmail.com" }
-  ],
-  reminders: {
-    useDefault: false,
-    overrides: [
-      { method: "email", minutes: 24 * 60 },
-      { method: "popup", minutes: 10 }
-    ]
-  }
-};
-calendar.events.insert({
-  auth: auth,
-  calendarId: 'primary',
-  resource: event,
-}, function(err, event) {
-  if (err) {
-    console.log('There was an error contacting the Calendar service: ' + err);
-    return;
-  }
-  console.log('Event created: %s', event.data.htmlLink);
-});
 }
