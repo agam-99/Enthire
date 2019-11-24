@@ -43,14 +43,18 @@ module.exports.postData = (req, res) => {
     var event = {
       summary: "Google Hangout Meeting",
       location: "Google Hangout",
-      description: "A chance to hear more about Google's developer products. https://hangouts.google.com",
+      description: "A chance to hear more about Google's developer products",
       start: {
-        dateTime: "2019-11-28T09:00:00-00:00"
+        dateTime: "2019-11-27T09:00:00-00:00"
       },
       end: {
         dateTime: "2019-11-28T11:00:00-00:00"
       },
-      hangoutLink: "https://hangouts.google.com",
+      conferenceData: {
+        createRequest: {
+          requestId: "n5yk4jkmt"
+        }
+      },
       attendees: attendees,
       reminders: {
         useDefault: true
@@ -59,9 +63,10 @@ module.exports.postData = (req, res) => {
     calendar.events.insert(
       {
         auth: auth,
+        conferenceDataVersion: 1,
         calendarId: "primary",
         resource: event,
-        sendNotifications:true
+        sendNotifications: true
       },
       function(err, event) {
         if (err) {
